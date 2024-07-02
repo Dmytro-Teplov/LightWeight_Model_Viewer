@@ -10,11 +10,6 @@
 #include <fcntl.h>
 #endif
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    
-}
-
 int main(void)
 {
     GLFWwindow* window;
@@ -124,6 +119,13 @@ int main(void)
     r.camera = &camera;
     world_grid.rotate(true,false,false,-90);
     world_grid.scale(true,true,true,10);
+    //world_grid.scale(true,true,true,10);
+    //model.scale(true,true,true,1.0);
+
+    double x_temp, y_temp;
+
+    glm::vec3 vec = glm::vec3(1.0);
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -143,8 +145,23 @@ int main(void)
         glViewport(0, 0, w_width, w_height);
 
         model.rotate(false,true,false,1);
-        camera.update(w_width, w_height);
+        //ADD IF NEEDED
+        camera.update(w_width, w_height); 
+        //model.set_pos(vec);
+        
+        
+        if (camera.needs_update)
+        {
+            glfwGetCursorPos(window, &x_temp, &y_temp);
+            camera.move(r.x,r.y, x_temp, y_temp, vec);
+            glfwGetCursorPos(window, &r.x, &r.y);
+        }
+        else
+        {
+            glfwGetCursorPos(window, &r.x, &r.y);
+        }
 
+        
         r.draw(model);
         r.draw(world_grid);
         
