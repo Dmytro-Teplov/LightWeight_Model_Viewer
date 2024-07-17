@@ -51,6 +51,7 @@ int main(void)
     
     
     Model model,world_grid;
+    Model XY,XZ,YZ;
     
     float v[40] = {
       -1.0f, -1.0f,  1.0, 1.0, 0.0,
@@ -89,6 +90,8 @@ int main(void)
 
     model.initialize(v,std::size(v), i, std::size(i), test_s.ID);
     world_grid.initialize(v2,std::size(v2), i2, std::size(i2), grid_s.ID);
+    XY.initialize(v2,std::size(v2), i2, std::size(i2), grid_s.ID);
+    YZ.initialize(v2,std::size(v2), i2, std::size(i2), grid_s.ID);
 
     double prevTime = 0.0;
     double crntTime = 0.0;
@@ -118,7 +121,11 @@ int main(void)
     r.window = window;
     r.camera = &camera;
     world_grid.rotate(true,false,false,-90);
+    XY.rotate(false,true,false,-90);
+    //YZ.rotate(true,false,false,-90);
     world_grid.scale(true,true,true,10);
+    XY.scale(true,true,true,10);
+    YZ.scale(true,true,true,10);
     //world_grid.scale(true,true,true,10);
     //model.scale(true,true,true,1.0);
 
@@ -147,7 +154,7 @@ int main(void)
         model.rotate(false,true,false,1);
         //ADD IF NEEDED
         camera.update(w_width, w_height); 
-        //model.set_pos(vec);
+        
         
         
         if (camera.needs_update)
@@ -160,10 +167,13 @@ int main(void)
         {
             glfwGetCursorPos(window, &r.x, &r.y);
         }
-
+        model.set_pos(vec);
         
         r.draw(model);
         r.draw(world_grid);
+        r.draw(YZ);
+        r.draw(XY);
+        
         
         
         glfwSwapBuffers(window);

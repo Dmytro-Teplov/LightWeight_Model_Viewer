@@ -24,45 +24,35 @@ void Camera::move(float x_old, float y_old, float x_new, float y_new, glm::vec3 
 	glm::vec3 raw_vec= glm::vec3(x_new - x_old, y_old - y_new, 0.0);
 	if (raw_vec == glm::vec3(0, 0, 0)|| x_new==0 ||y_new==0)
 		return;
-	glm::vec3 transf = raw_vec.y * up + raw_vec.x * right;
+	glm::vec3 WSraw_vec = raw_vec.y * up + raw_vec.x * right;
 	float sign = std::copysign(1.0f, raw_vec.x);
-	//float radius = 0;
-	/*float camX = 0;
-	float camZ = 0;*/
-	/*float x_norm_new = 2.0 * (x_new) / width - 1.0;
-	float x_norm_old = 2.0 * (x_old) / width - 1.0;
-	float y_norm_new = 1.0 - 2.0 * (y_new) / height;
-	float y_norm_old = 1.0 - 2.0 * (y_old) / height;
-	float x_sp, y_sp, z_sp;
-	float x_sp_old, y_sp_old, z_sp_old;*/
 	float angle;
-	//std::cout << "X: " << x_norm_new << "\nY: " << y_norm_new;
+	float px;
+	float pz;
 	if (!glm::length(raw_vec))
 		return;
 	switch (mode)
 	{
 	case 1:
-		//radius = glm::length(pos);
-		angle = glm::radians(90.0f);
-		glm::mat2 rotationMatrix = glm::mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
-		glm::vec2 axis_2d = glm::normalize(rotationMatrix * glm::vec2(raw_vec.x, raw_vec.y));
-		glm::vec3 axis_3d = glm::vec3(axis_2d.x, axis_2d.y, 0.0f);
+		glm::vec3 dir = glm::normalize(pos - target);
+		glm::vec3 axis_3d = -glm::cross(dir, glm::normalize(WSraw_vec));
 		angle = glm::radians(glm::length(raw_vec));
 		glm::vec3 new_pos = pos * cos(angle) + glm::cross(axis_3d, pos)*sin(angle)+ axis_3d*(glm::dot(axis_3d,pos))*(1.0f-cos(angle));
 		pos = new_pos;
+		glm::vec3 tempUP = glm::vec3(0, 1, 0);
+		right = glm::normalize(glm::cross(tempUP, glm::normalize(pos - target)));
+		up = glm::cross(glm::normalize(pos - target), right);
 		view = glm::lookAt(pos, target, up);
-		/*std::cout << "X " << axis_3d.x << "\n";
-		std::cout << "Y " << axis_3d.y << "\n";*/
 		break;
 	case 2:
 		glm::vec3 transl = sign * (float)glm::length(raw_vec) * (float)0.01 * glm::normalize(pos - target);
 		pos = pos - transl;
-		target = target - transl;
+		target = target; //- transl;
 		view = glm::lookAt(pos, target, up);
 		break;
 	case 3:
-		pos = pos - transf * 0.01f;
-		target = target - transf * 0.01f;
+		pos = pos - WSraw_vec * 0.01f;
+		target = target - WSraw_vec * 0.01f;
 		view = glm::lookAt(pos, target, up);
 		break;
 	}
@@ -73,7 +63,7 @@ void Camera::zoom(GLFWwindow* window, double xoffset, double yoffset)
 {
 	glm::vec3 dir = glm::normalize(pos - target);
 	pos = pos + (float)yoffset * dir;
-	target = target + (float)yoffset*dir;
+	target = target;//+ (float)yoffset*dir;
 	view = glm::lookAt(pos, target, up);
 }
 
